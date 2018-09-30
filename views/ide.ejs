@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+	<meta charset="utf-8">
+	<script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="css/uikit.min.css" />
+	<script src="js/uikit.min.js"></script>
+	<script src="js/uikit-icons.min.js"></script>
+	<script type='text/javascript' src='/js/buildReq.js'></script>
+	<link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1 class=""><%= title %></h1>
+    <div class="uk-card uk-card-default uk-card-body" uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
+    <div class="uk-margin uk-width-1-1">
+			<label class="uk-label">roomId</label>
+			<span id="roomId" class="uk-label" ><%= room %></span>
+			<label class="uk-label">roomPw</label>
+			<span id="roomPw" class="uk-label" ><%= pw %></span>
+			<label class="uk-form-label" for="language">言語</label>
+			<div class="uk-form-controls">
+				<select class="uk-select" id="language">
+						<option value="c">c</option>
+						<option value="cpp">cpp</option>
+						<option value="objective-c">objective-c</option>
+						<option value="java">java</option>
+						<option value="kotlin">kotlin</option>
+						<option value="scala">scala</option>
+						<option value="swift">swift</option>
+						<option value="csharp">csharp</option>
+						<option value="go">go</option>
+						<option value="haskell">haskell</option>
+						<option value="erlang">erlang</option>
+						<option value="perl">perl</option>
+						<option value="python">python</option>
+						<option value="python3">python3</option>
+						<option value="ruby">ruby</option>
+						<option value="php">php</option>
+						<option value="bash">bash</option>
+						<option value="r">r</option>
+						<option value="javascript">javascript</option>
+						<option value="coffeescript">coffeescript</option>
+						<option value="vb">vb</option>
+						<option value="cobol">cobol</option>
+						<option value="fsharp">fsharp</option>
+						<option value="d">d</option>
+						<option value="clojure">clojure</option>
+						<option value="elixir">elixir</option>
+						<option value="mysql">mysql</option>
+						<option value="rust">rust</option>
+						<option value="scheme">scheme</option>
+						<option value="commonlisp">commonlisp</option>
+						<option value="plain">plain</option>
+				</select>
+			</div>
+
+		<!-- <label for="language" class="">言語</label>
+		<select id="language" class="uk-select">
+	    </select> -->
+	</div>
+			<textarea  id="codeText" name="source_code"  class="uk-width-1-1 uk-section uk-textarea" placeholder="ここにコードを書いて実行ボタンを押してみよう。"></textarea>
+    <div class="uk-width-1-1">
+			<button id="executeButton" onclick="buildReq();" class="uk-button uk-button-default">実行</button>
+<!-- 			<div uk-spinner disabled></div> -->
+			<button id="resultStatus" class="uk-button uk-button-default"  disabled>status : wait</button>
+	</div>
+	</div>
+
+	<!-- 	    <label  for="codeText">ソースを記述してください...</label> -->
+<!-- 		<div class=""> -->
+<!-- 			<a href="#stdout" class="">stdIo</a> -->
+<!-- 			<a href="#stderr" class="">stdErr</a> -->
+<!-- 		</div> -->
+
+    <div class="uk-card uk-card-default uk-card-body" uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
+		<!-- <ul class="uk-tab-bottom" uk-tab>
+		    <li class="uk-active"><a href="#stdout">stdIo</a></li>
+		    <li><a href="#stderr">stdErr</a></li>
+		</ul>
+		<div class="">
+			<textarea  rows= "3" id="stdout" class="" disabled="disabled"></textarea>
+			<textarea  rows= "3" id="stderr" class="" disabled="disabled"></textarea>
+		</div> -->
+
+		<!-- <button type="button" uk-toggle="target: #stdout; animation: uk-animation-fade">stdIo</button>
+		<textarea  rows= "3" id="stdout" class="" disabled="disabled"></textarea>
+		<button type="button" uk-toggle="target: #stderr; animation: uk-animation-fade">stdErr</button>
+		<textarea  rows= "3" id="stderr" class="" disabled="disabled"></textarea>
+		<button type="button" uk-toggle="target: #my-id; animation: uk-animation-fade"></button>
+		<p id="my-id"></p> -->
+
+		<button id="stdoutbutton" class="uk-button uk-button-default" type="button" uk-toggle="target: #stdoutCard; animation: uk-animation-fade">stdIo</button>
+		<button id="stderrbutton" class="uk-button uk-button-default" type="button" uk-toggle="target: #stderrCard; animation: uk-animation-fade">stdErr</button>
+		<button id="msgbutton" class="uk-button uk-button-default" type="button" uk-toggle="target: #msg; animation: uk-animation-fade">chat</button>
+		<div id="stdoutCard" class="uk-card uk-card-default uk-card-body uk-margin-small uk-height-medium">
+			<textarea  id="stdout" class="uk-width-1-1 uk-section uk-textarea" readonly placeholder="出力ログはありません。"></textarea>
+			<div class="uk-inline">
+				<button class="uk-form-icon uk-form-icon-flip" onclick="" uk-icon="icon: comment"></button>
+				<input id="" class="uk-input" type="text">					
+			</div>
+		</div>
+		<div id="stderrCard" class="uk-card uk-card-default uk-card-body uk-margin-small uk-height-medium">
+			<textarea  id="stderr" class="uk-width-1-1 uk-section uk-textarea" readonly placeholder="エラーログはありません。"></textarea>
+			<div class="uk-inline">
+				<button class="uk-form-icon uk-form-icon-flip" onclick="" uk-icon="icon: comment"></button>
+				<input id="" class="uk-input" type="text">					
+			</div>
+		</div>
+		<div id="msg" class="uk-card uk-card-default uk-card-body uk-margin-small uk-height-mediu" >
+			<textarea  id="msgout" class="uk-width-1-1 uk-section uk-textarea" readonly ></textarea>
+			<input id="nameInput" class="uk-input" type="text" value="">
+			<input id="chatInput" class="uk-input" type="text">					
+			<button class="uk-button uk-button-default" onclick="publishMessage();" uk-icon="icon: comment">送信</button>
+			<!-- <input id="chatInput" type="text" class="" value="" /> -->
+			<!-- <button onclick="publishMessage();" class="uk-button uk-button-default" >送信</button>	 -->
+		<div class="uk-inline">
+			</div>
+		</div>
+	
+		<!-- <div class="uk-inline boundary-align uk-width-1-1">
+
+
+			<button class="uk-button uk-button-default" type="button">stdIo</button>
+			<div uk-drop="mode: click; pos: bottom-justify; boundary: .boundary-align; boundary-align: true">
+				<div class="uk-card uk-card-body uk-card-default uk-width-1-1"><textarea  rows= "3" id="stdout" class="uk-width-1-1" disabled="disabled"></textarea></div>
+			</div>
+			<button class="uk-button uk-button-default" type="button">stdErr</button>
+			<div uk-drop="mode: click; pos: bottom-justify; boundary: .boundary-align; boundary-align: true">
+				<div class="uk-card uk-card-body uk-card-default uk-width-1-1"><textarea  rows= "3" id="stderr" class="uk-width-1-1" disabled="disabled"></textarea></div>
+			</div>
+		</div> -->
+	</div>
+
+	<!-- 	    <label  for="outputConsole">コンソールへ入力できます...</label> -->
+	<!-- </form> -->
+
+
+    <!-- <div class="uk-card uk-card-default uk-card-body" uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
+		<div class="">
+			<input id="myId" type="text" class="" value="MyID:エラーですペアプログラミングはできません。" />
+			<input id="friendId" type="text" class="" value="PairID:" />
+			<div  id="chatBox" class="" ></div>
+		</div>
+		<div class="" id="msg">
+			<label class="">起動しました</label>
+		</div>
+		<div class="">
+			<input id="chatInput" type="text" class="" value="" />
+			<button onclick="publishMessage();" class="uk-button uk-button-default" >送信</button>
+		</div>
+	</div> -->
+	<div class="uk-card-footer uk-text-center" uk-grid="uk-grid"uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
+		&#169; copyright 2018 All rights reserved.
+	</div>
+</body>
+</html>

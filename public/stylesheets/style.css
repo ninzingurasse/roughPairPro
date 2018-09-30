@@ -1,0 +1,44 @@
+body {
+  /*
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  */
+  font: 14px  "YuGothic",'Yu Gothic',monospace;
+}
+
+a {
+  color: #00B7FF;
+}
+
+body{
+	/*
+	background-color: #ddffee;
+	*/
+}
+
+h1{
+	font-family:'Yu Mincho';
+}
+
+
+textarea{
+  resize: none;
+}
+#codeText{
+  resize: auto;  
+}
+
+/* .content {
+  display: none;
+}
+
+.content:target {
+  display: block;
+} */
+/* 
+#stdoutbutton, #stderrbutton, #msgbutton {
+
+}
+
+#stdoutbutton:active, #stderrbutton:active, #msgbutton:active{
+  color:#ff0000;
+} */
