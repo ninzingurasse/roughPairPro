@@ -71,6 +71,7 @@ function addMessage(msg) {
   console.log(new Date().toLocaleTimeString() + ' ' + msg);
 //   $("#msg").append("<p>" + new Date().toLocaleTimeString() + ' ' + msg + "</p>");
 	$("#msgout").append(new Date().toLocaleTimeString() + ' ' + msg + "\r\n");
+	$("#msgout").scrollTop($("#msgout")[0].scrollHeight - $("#msgout").height());
 }
 
 var master = false;

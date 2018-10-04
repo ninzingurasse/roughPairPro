@@ -12,7 +12,7 @@ var express = require('express')
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 8000);
+app.set('port', process.env.PORT || 8002);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.favicon());
@@ -42,7 +42,7 @@ server.listen(app.get('port'), function(){
 });
 
 var io = require('socket.io').listen(server);
-server.listen(8000);
+server.listen(8002);
 
 /*
  * サーバー側ではクライアント側の接続を受け付けると, io.socketsオブジェクトにconnectionイベントが発生します。

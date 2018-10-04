@@ -9,12 +9,6 @@ a {
   color: #00B7FF;
 }
 
-body{
-	/*
-	background-color: #ddffee;
-	*/
-}
-
 h1{
 	font-family:'Yu Mincho';
 }
@@ -26,19 +20,3 @@ textarea{
 #codeText{
   resize: auto;  
 }
-
-/* .content {
-  display: none;
-}
-
-.content:target {
-  display: block;
-} */
-/* 
-#stdoutbutton, #stderrbutton, #msgbutton {
-
-}
-
-#stdoutbutton:active, #stderrbutton:active, #msgbutton:active{
-  color:#ff0000;
-} */
