@@ -9,9 +9,8 @@ socketio= io.connect('/');
 /*
  * socketioからの受信イベント
  */
-//socketio.on("connected", function(name) {});
-//socketio.on("publish", function (data) { addMessage(data.value); });
-socketio.on("disconnect", function () {});
+// socketio.on("connected",function(){console.log("connectedを受信しました")});
+// socketio.on("publish", function (data) { addMessage(data.value); });
 
 //行選択完了イベント。
 socketio.on("rowSelect", function () {
@@ -24,23 +23,27 @@ socketio.on("rowSelect", function () {
 socketio.on("rowCommit", function () {
 	//行の開放を行う。
 });
-
+var myName;
 function roomInit(room,pw) {
 	console.log("roomInit");
 	console.log(room);
 	console.log(pw);
 	
     // ※3 入室する部屋番号を送信
-//	socketio.on('connected', function() {socketio.json.emit('init', { 'room': room, 'name': name });});
+	//socketio.on('connected', function() {socketio.json.emit('init', { 'room': room, 'name': name });});
 	socketio.emit("initRoom",{room,pw});
 	socketio.on("initRoom",function(data){
 		$("#roomId").html(data.room);
 		$("#roomPw").html(data.pw);
+		$("#nameInput").val(data.name);
+		
 	});
     // ※7 受け取ったメッセージを表示
 	socketio.on("updateCode", function (data) { updateCodeText(data.value); });
-	socketio.on("publish", function (data) { addMessage(data.value); });
+	socketio.on("publish", function (data) { addMessage(data.name, data.value); });
 	socketio.on("controlCode", function (data) { setControlCode(data); });
+	socketio.on("disconnect", function () {});
+	// $("#nameInput").on('input',function(){ myName = $(this).val() });
 }
 
 /*
@@ -50,8 +53,9 @@ function roomInit(room,pw) {
 function publishMessage() {
   var textInput = document.getElementById('chatInput');
   if(textInput.value == '')	return;
-  var msg = "[" + myName + "] " + textInput.value;
-  socketio.emit("publish", {value: msg});
+//   var msg = "[" + myName + "] " + textInput.value;
+  var msg = textInput.value;
+  socketio.emit("publish", {name: $("#nameInput").val(),value: msg});
   textInput.value = '';
 }
 
@@ -63,20 +67,22 @@ function updateCodeText(msg){
 	$("#codeText").val(msg);	
 }
 
-
 /*
  * チャットボックスにメッセージを追加するメソッド
  */
-function addMessage(msg) {
+function addMessage(name,msg) {
   console.log(new Date().toLocaleTimeString() + ' ' + msg);
 //   $("#msg").append("<p>" + new Date().toLocaleTimeString() + ' ' + msg + "</p>");
-	$("#msgout").append(new Date().toLocaleTimeString() + ' ' + msg + "\r\n");
+	$("#msgout").append(new Date().toLocaleTimeString() + name + ' ' + msg + "\r\n");
 	$("#msgout").scrollTop($("#msgout")[0].scrollHeight - $("#msgout").height());
 }
 
 var master = false;
 function setControlCode(data){
+	console.log("setControlCode");
+	console.log(data);
 	$("#language").val(data.language);
+	$("#roomPw").val(data.roomPw);
 	$("#resultStatus").html(data.exeStatus);
 	$("#stdout").html(data.stdio);
 	$("#stderr").html(data.stderr);
@@ -84,11 +90,13 @@ function setControlCode(data){
 	if(master == true){
 		//マスターなので編集可に設定
 		$("#language").prop("disabled",false);
+		$("#roomPw").prop("disabled",false);
 		$("#codeText").prop("disabled",false);
 		$("#executeButton").prop("disabled",false);
 	}else{
 		//編集中らしいので編集不可に設定
 		$("#language").prop("disabled",true);
+		$("#roomPw").prop("disabled",true);
 		$("#codeText").prop("disabled",true);
 		$("#executeButton").prop("disabled",true);
 	}
@@ -109,15 +117,11 @@ function setControlCode(data){
 // 	}
 // });
 
-var myName ;
 // 3.開始処理
 $(function(){
 	UIkit.toggle($("#stdoutbutton")).toggle();
 	UIkit.toggle($("#stderrbutton")).toggle();
 	var msgArea = $("#msg");
-	myName = "名無しプログラマーさん";
-	$("#nameInput").val(myName);
-	$("#nameInput").on('input',function(){ myName = $(this).val() });
 	//start(myName);
 	roomInit($("#roomId").html(),$("#roomPw").html());	
 	$codeText = $("#codeText");
@@ -125,13 +129,13 @@ $(function(){
 		console.log("フォーカスはいった");
 		var data = {
 			language:$("#language").val(),
+			roomPw:$("#roomPw").val(),
 			master:true,
 			stdio:$("#stdout").html(),
 			stderr:$("#stderr").html(),
 			exeStatus:$("#resultStatus").html()
 		}
-		socketio.emit("controlCode", data);	  
-		
+		socketio.emit("controlCode", data);	  		
 	});
 	$codeText.blur(function(){
 		console.log("フォーカス失いました。");
@@ -142,6 +146,7 @@ $(function(){
 		if(master==true){
 			var data = {
 				language:$("#language").val(),
+				roomPw:$("#roomPw").val(),
 				master:false,
 				stdio:$("#stdout").html(),
 				stderr:$("#stderr").html(),
@@ -158,6 +163,11 @@ $(function(){
 		var msg = text;
 		socketio.emit("updateCode", {value: msg});	  
 	});	
+
+	$(window).on('beforeunload', function() {
+		socketio.disconnect();
+		// return 'ページを離れると部屋から退出しますがよろしいですか？';
+    });
 });
 
 function buildReq(){

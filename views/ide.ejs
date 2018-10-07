@@ -16,12 +16,13 @@
     <h1 class=""><%= title %></h1>
     <div class="uk-card uk-card-default uk-card-body uk-padding-small" uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
     <div class="uk-margin uk-width-1-1">
-			<label class="uk-label">roomId</label>
+			<label class="uk-form-large">roomId</label>
 			<span id="roomId" class="uk-label" ><%= room %></span>
-			<label class="uk-label">roomPw</label>
-			<span id="roomPw" class="uk-label" ><%= pw %></span>
-			<label class="uk-form-label" for="language">言語</label>
+			<label class="uk-form-label">roomPw</label>
+			<!-- <span id="roomPw" class="uk-label" ><%= pw %></span> -->
+			<input id="roomPw" class="uk-form-small" type="text" value="<%= pw %>">					
 			<div class="uk-form-controls">
+				<label class="uk-form-label" for="language">言語</label>
 				<select class="uk-select" id="language">
 						<option value="c">c</option>
 						<option value="cpp">cpp</option>
@@ -57,7 +58,7 @@
 				</select>
 			</div>
 	</div>
-	<textarea  id="codeText" name="source_code"  class="uk-width-1-1 uk-textarea" placeholder="ここにコードを書いて実行ボタンを押してみよう。"></textarea>
+	<textarea  id="codeText" name="source_code"  class="uk-width-1-1 uk-textarea" placeholder="ここにコードを書いて実行ボタンを押してみよう。"><%= code %></textarea>
     <div class="uk-width-1-1">
 			<button id="executeButton" onclick="buildReq();" class="uk-button uk-button-default">実行</button>
 <!-- 			<div uk-spinner disabled></div> -->

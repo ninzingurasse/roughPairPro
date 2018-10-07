@@ -1,13 +1,9 @@
 # Rough Pair Pro
 
-![Badge Status](https://ci-as-a-service)
-
 ## Description
 <!--　大まかな概要 -->
 ペアプログラミングをするためのWebサーバーアプリです。
 現在まだプロトタイプです。
-
-Nodeclipse is free open-source project that grows with your contributions.
 
 ## Features
 
