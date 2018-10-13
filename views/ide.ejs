@@ -10,20 +10,17 @@
 	<script src="js/uikit.min.js"></script>
 	<script src="js/uikit-icons.min.js"></script>
 	<script type='text/javascript' src='/js/buildReq.js'></script>
+	<link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Amatic+SC|Cairo|Charmonman|Cinzel|Dancing+Script|Gloria+Hallelujah|Great+Vibes|Indie+Flower|K2D|Kodchasan|Mali|Montserrat|PT+Sans|Pacifico|Permanent+Marker|Poiret+One|Roboto" rel="stylesheet">
 	<link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1 class=""><%= title %></h1>
     <div class="uk-card uk-card-default uk-card-body uk-padding-small" uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
-    <div class="uk-margin uk-width-1-1">
-			<label class="uk-form-large">roomId</label>
-			<span id="roomId" class="uk-label" ><%= room %></span>
-			<label class="uk-form-label">roomPw</label>
-			<!-- <span id="roomPw" class="uk-label" ><%= pw %></span> -->
-			<input id="roomPw" class="uk-form-small" type="text" value="<%= pw %>">					
-			<div class="uk-form-controls">
+    <div class="uk-margin-remove uk-padding-remove uk-width-1-1">
+		<label class="uk-padding-remove uk-margin-remove uk-display-block"><%= title %></label>		
+		<h1 class="uk-margin-remove-top">RoughPairPro</h1>
+		<div class="uk-form-controls uk-padding-remove uk-display-block">
 				<label class="uk-form-label" for="language">言語</label>
-				<select class="uk-select" id="language">
+				<select class="uk-select uk-width-small" id="language" value="<%= language %>">
 						<option value="c">c</option>
 						<option value="cpp">cpp</option>
 						<option value="objective-c">objective-c</option>
@@ -56,49 +53,56 @@
 						<option value="commonlisp">commonlisp</option>
 						<option value="plain">plain</option>
 				</select>
+				<label class="uk-form-label">roomId</label>
+				<input id="roomId" class="uk-input uk-width-small uk-margin-remove" type="text" value="<%= room %>">					
+				<label class="uk-form-label">roomPw</label>
+				<input id="roomPw" class="uk-input uk-width-small" type="text" value="<%= pw %>">					
+				<button id="" class="uk-button uk-button-small" onclick="javascript:window.history.back(-1);return false;">exit</button>
 			</div>
 	</div>
 	<textarea  id="codeText" name="source_code"  class="uk-width-1-1 uk-textarea" placeholder="ここにコードを書いて実行ボタンを押してみよう。"><%= code %></textarea>
     <div class="uk-width-1-1">
-			<button id="executeButton" onclick="buildReq();" class="uk-button uk-button-default">実行</button>
+			<button id="executeButton" onclick="buildReq();" class="uk-button uk-button-small">実行</button>
 <!-- 			<div uk-spinner disabled></div> -->
-			<button id="resultStatus" class="uk-button uk-button-default"  disabled>status : wait</button>
+			<button id="resultStatus" class="uk-button uk-button-small"  disabled>status : wait</button>
 	</div>
 	</div>
 
-    <div class="uk-card uk-card-default uk-card-body uk-padding-small" uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
+    <div class="uk-card uk-card-default uk-card-body uk-padding-small uk-margin-remove" uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
 
-		<button id="stdoutbutton" class="uk-button uk-button-default" type="button" uk-toggle="target: #stdoutCard; animation: uk-animation-fade">stdIo</button>
-		<button id="stderrbutton" class="uk-button uk-button-default" type="button" uk-toggle="target: #stderrCard; animation: uk-animation-fade">stdErr</button>
-		<button id="msgbutton" class="uk-button uk-button-default" type="button" uk-toggle="target: #msg; animation: uk-animation-fade">chat</button>
-		<div id="stdoutCard" class="uk-card uk-card-default uk-card-body uk-margin-small uk-padding-small" uk-height-match>
+		<button id="stdoutbutton" class="uk-button uk-button-small" type="button" uk-toggle="target: #stdoutCard; animation: uk-animation-fade">stdIo</button>
+		<button id="stderrbutton" class="uk-button uk-button-small" type="button" uk-toggle="target: #stderrCard; animation: uk-animation-fade">stdErr</button>
+		<button id="msgbutton" class="uk-button uk-button-small" type="button" uk-toggle="target: #msg; animation: uk-animation-fade">chat</button>
+		<div id="stdoutCard" class="uk-card uk-card-default uk-card-body uk-margin-remove uk-padding-remove" uk-height-match>
 			<textarea  id="stdout" class="uk-width-1-1 uk-textarea uk-height-small" readonly placeholder="出力ログはありません。"></textarea>
 			<div class="uk-inline">
 				<button class="uk-form-icon uk-form-icon-flip" onclick="" uk-icon="icon: comment"></button>
 				<input id="" class="uk-input" type="text">					
 			</div>
 		</div>
-		<div id="stderrCard" class="uk-card uk-card-default uk-card-body uk-margin-small uk-padding-small" uk-height-match>
+		<div id="stderrCard" class="uk-card uk-card-default uk-card-body uk-margin-remove uk-padding-remove" uk-height-match>
 			<textarea  id="stderr" class="uk-width-1-1 uk-textarea uk-height-small" readonly placeholder="エラーログはありません。"></textarea>
 			<div class="uk-inline">
 				<button class="uk-form-icon uk-form-icon-flip" onclick="" uk-icon="icon: comment"></button>
 				<input id="" class="uk-input" type="text">					
 			</div>
 		</div>
-		<div id="msg" class="uk-card uk-card-default uk-card-body uk-margin-small uk-padding-small" uk-height-match>
+		<div id="msg" class="uk-card uk-card-default uk-card-body uk-padding-remove uk-margin-remove" uk-height-match>
 			<textarea  id="msgout" class="uk-width-1-1 uk-textarea uk-height-small" readonly ></textarea>
-			<input id="nameInput" class="uk-input" type="text" value="">
-			<input id="chatInput" class="uk-input" type="text">					
-			<button class="uk-button uk-button-default" onclick="publishMessage();" uk-icon="icon: comment">送信</button>
-			<!-- <input id="chatInput" type="text" class="" value="" /> -->
-			<!-- <button onclick="publishMessage();" class="uk-button uk-button-default" >送信</button>	 -->
-		<div class="uk-inline">
+			<div class="uk-inline">
+				<input id="nameInput" class="uk-input uk-width-medium" type="text" value="">
+				<button class="uk-form-icon uk-form-icon-flip" uk-icon="icon: comment" onclick="publishMessage();"></button>
+				<input id="chatInput" class="uk-input uk-width-large" type="text" placeholder="メッセージを入力してチャットが送信できるよ。">					
 			</div>
+			
+			<!-- <button class="uk-button uk-button-small" onclick="publishMessage();">送信</button> -->
+			<!-- <input id="chatInput" type="text" class="" value="" /> -->
+			<!-- <button onclick="publishMessage();" class="uk-button uk-button-small" >送信</button>	 -->
 		</div>
-	</div>
-	
-	<div class="uk-card-footer uk-text-center uk-padding-small" uk-grid="uk-grid"uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
-		&#169; copyright 2018 All rights reserved.
+	</div>	
+	<div class="uk-card-footer uk-padding-small">
+		<div>create by ninzingurasse <a href="https://github.com/ninzingurasse">github</a></label><label><a href="https://qiita.com/ninzingurasse">Qiita</a></div>
+		<div>&#169; copyright 2018 ninzingurasse All rights reserved.</div>
 	</div>
 </body>
 </html>

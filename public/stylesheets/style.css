@@ -5,12 +5,35 @@ body {
   font: 14px  "YuGothic",'Yu Gothic',monospace;
 }
 
-a {
-  color: #00B7FF;
-}
+
 
 h1{
-	font-family:'Yu Mincho';
+font-family: 'Charmonman', cursive;
+/*
+  font-family: 'Abril Fatface', cursive;
+  font-family: 'Amatic SC', cursive;
+#  font-family: 'Cairo', sans-serif;
+##  font-family: 'Charmonman', cursive;
+  font-family: 'Cinzel', serif;
+#  font-family: 'Dancing Script', cursive;
+  font-family: 'Gloria Hallelujah', cursive;
+  font-family: 'Great Vibes', cursive;
+  font-family: 'Indie Flower', cursive;
+  font-family: 'K2D', sans-serif;
+  font-family: 'Kodchasan', sans-serif;
+  font-family: 'Mali', cursive;
+  font-family: 'Montserrat', sans-serif;
+  font-family: 'PT Sans', sans-serif;
+  font-family: 'Pacifico', cursive;
+  font-family: 'Permanent Marker', cursive;
+  font-family: 'Roboto', sans-serif;
+#  font-family: 'Poiret One', cursive;
+
+*/
+}
+
+a {
+  color: #00B7FF;
 }
 
 

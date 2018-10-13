@@ -1,12 +1,4 @@
 
-const port = 8002;
-/**
- * logMode:
- * 0:ログ出力なし
- * 1:デバックモード。すべて出力
- * 2:通常モード。string型メッセージのみ出力。他の型のデータでloggerを使用しても何も返さない。 
- */
-const logMode = 1;
 
 //ライブラリ類のロード
 var express = require('express')
@@ -16,13 +8,15 @@ var express = require('express')
 //作成コードのロード
 var routes = require('./routes')
   , logger = require('./routes/logger')
-  , user = require('./routes/user');
-logger.mode = logMode;
+  , user = require('./routes/user')
+  , conf = require('./routes/setting');
+
+logger.mode = conf.logMode;
 logger.log("ログモードは" + logger.mode + "です。");
 
 // all environments
 var app = express();
-app.set('port', process.env.PORT || port);
+app.set('port', process.env.PORT || conf.port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.favicon());
@@ -48,7 +42,7 @@ server.listen(app.get('port'), function(){
 });
 
 var io = require('socket.io').listen(server);
-server.listen(port);
+server.listen(conf.port);
 
 /*
  * サーバー側ではクライアント側の接続を受け付けると, io.socketsオブジェクトにconnectionイベントが発生します。
@@ -101,6 +95,7 @@ io.sockets.on("connection", function (socket) {
         io.to(room).emit("publish", {name:"["+socket.id + ":"+ name +"]",value:"さんがルームに参加しました。"});
       }else{
         //PW誤り
+        logger.log("["+socket.id + ":"+ name +"]" + "さんはPWを間違えました。")
       }
     }
     if(pw == data.pw){
@@ -180,6 +175,17 @@ io.sockets.on("connection", function (socket) {
       logger.log("コード更新レスポンスを送信します。");      
       // code = data.value;
       routes.code = data.value;
+      socket.broadcast.to(room).emit("updateCode", {value:data.value});
+    }
+  });
+  // ソースコード送信カスタムイベント
+  socket.on("updatePw", function (data) {
+    // ※6 受け取ったメッセージを部屋の皆に送信
+    logger.log("updateCodeを受信しました。");
+    if(master==undefined || master==socket.id){
+      logger.log("コード更新レスポンスを送信します。");      
+      // code = data.value;
+      pw = data.value;
       socket.broadcast.to(room).emit("updateCode", {value:data.value});
     }
   });

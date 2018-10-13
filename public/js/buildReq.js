@@ -33,8 +33,11 @@ function roomInit(room,pw) {
 	//socketio.on('connected', function() {socketio.json.emit('init', { 'room': room, 'name': name });});
 	socketio.emit("initRoom",{room,pw});
 	socketio.on("initRoom",function(data){
-		$("#roomId").html(data.room);
-		$("#roomPw").html(data.pw);
+		if(data.result == false){
+			alert("PWを間違えています。");
+		}
+		$("#roomId").val(data.room);
+		$("#roomPw").val(data.pw);
 		$("#nameInput").val(data.name);
 		
 	});
@@ -123,9 +126,31 @@ $(function(){
 	UIkit.toggle($("#stderrbutton")).toggle();
 	var msgArea = $("#msg");
 	//start(myName);
-	roomInit($("#roomId").html(),$("#roomPw").html());	
-	$codeText = $("#codeText");
-	$codeText.focus(function(){
+	roomInit($("#roomId").val(),$("#roomPw").val());	
+	$("#codeText").focus(function(){
+		codeMaster();
+	}).blur(function(){
+		codeNoMaster();
+	}).on('input',function(){
+		var text = $(this).val();
+		console.log(text);
+		if(text == '')	return;
+		var msg = text;
+		socketio.emit("updateCode", {value: msg});	  
+	});	
+	$("#roomPw").focus(function(){
+		codeMaster();
+	}).blur(function(){
+		codeNoMaster();
+	}).on('input',function(){
+		var text = $(this).val();
+		console.log(text);
+		if(text == '')	return;
+		var msg = text;
+		socketio.emit("updatePw", {value: msg});	  
+	});	
+
+	function codeMaster(){
 		console.log("フォーカスはいった");
 		var data = {
 			language:$("#language").val(),
@@ -136,8 +161,8 @@ $(function(){
 			exeStatus:$("#resultStatus").html()
 		}
 		socketio.emit("controlCode", data);	  		
-	});
-	$codeText.blur(function(){
+	}
+	function codeNoMaster(){
 		console.log("フォーカス失いました。");
 		if($("#resultStatus").html()=="実行中"){
 			$codeText.focus();
@@ -154,16 +179,8 @@ $(function(){
 			}
 			console.log("フォーカス失いました。送信");
 			socketio.emit("controlCode", data);	  	
-		}
-	});
-	$codeText.on('input',function(){
-		var text = $(this).val();
-		console.log(text);
-		if(text == '')	return;
-		var msg = text;
-		socketio.emit("updateCode", {value: msg});	  
-	});	
-
+		}		
+	}
 	$(window).on('beforeunload', function() {
 		socketio.disconnect();
 		// return 'ページを離れると部屋から退出しますがよろしいですか？';
