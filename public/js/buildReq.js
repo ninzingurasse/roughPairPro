@@ -55,14 +55,6 @@ function updateCodeText(msg){
 	$("#codeText").val(msg);	
 }
 
-/**
- * PWを更新するメソッド
- */
-function updatePwText(msg){
-	console.log(new Date().toLocaleTimeString() + ' ' + msg);
-	$("#roomPw").val(msg);	
-}
-
 /*
  * チャットボックスにメッセージを追加するメソッド
  */
@@ -131,17 +123,12 @@ $(function(){
 		var msg = text;
 		socketio.emit("updateCode", {value: msg});	  
 	});	
-	$("#roomPw").focus(function(){
+	$("#language").focus(function(){
 		codeMaster();
 	}).blur(function(){
 		codeNoMaster();
-	}).on('input',function(){
-		var text = $(this).val();
-		console.log(text);
-		if(text == '')	return;
-		var msg = text;
-		socketio.emit("updatePw", {value: msg});	  
-	});	
+	});
+	
 	// ※7 受け取ったメッセージを表示
 	socketio.on("initRoom",function(data){
 		if(data.result == false){
@@ -157,7 +144,6 @@ $(function(){
 		
 	});
 	socketio.on("updateCode", function (data) { updateCodeText(data.value); });
-	socketio.on("updatePw", function (data) { updatePwText(data.value); });
 	socketio.on("publish", function (data) { addMessage(data.name, data.value); });
 	socketio.on("controlCode", function (data) { setControlCode(data); });
 	socketio.on("disconnect", function () {});

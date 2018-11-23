@@ -128,16 +128,11 @@ io.sockets.on("connection", function (socket) {
       //PW誤り
       logger.log("["+socket.id + ":"+ name +"]" + "さんはPWを間違えました。" + pw );
       logger.log("["+socket.id + ":"+ name +"]" + "さんはPWを間違えました。" + data.pw );
-      // logger.log(roomPw[roomMaster.indexOf(room)]);
       logger.log(roomMaster.indexOf(room));
       logger.log(data.room);
-      // logger.log(roomPw);
       logger.log(roomMaster);
-      // data.result = false;
       newRoom(false);
-      // if(room == "00000000"){
-      //   io.sockets.connected[socket.id].emit("publish", {name:"["+socket.id + ":"+ name +"]",value:"さんがルームから退出しました。"});//Room内の特定のユーザーのみ（socket.idで送信元のみに送信）
-      // }
+
     }
   });
 
