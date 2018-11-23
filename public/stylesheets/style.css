@@ -3,6 +3,7 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   */
   font: 14px  "YuGothic",'Yu Gothic',monospace;
+  margin: 0%;
 }
 
 
@@ -38,7 +39,9 @@ a {
 
 
 textarea{
+  /*
   resize: none;
+  */
 }
 #codeText{
   resize: auto;  

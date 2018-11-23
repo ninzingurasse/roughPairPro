@@ -32,21 +32,6 @@ function roomInit(room,pw) {
     // ※3 入室する部屋番号を送信
 	//socketio.on('connected', function() {socketio.json.emit('init', { 'room': room, 'name': name });});
 	socketio.emit("initRoom",{room,pw});
-	socketio.on("initRoom",function(data){
-		if(data.result == false){
-			alert("PWを間違えています。");
-		}
-		$("#roomId").val(data.room);
-		$("#roomPw").val(data.pw);
-		$("#nameInput").val(data.name);
-		
-	});
-    // ※7 受け取ったメッセージを表示
-	socketio.on("updateCode", function (data) { updateCodeText(data.value); });
-	socketio.on("publish", function (data) { addMessage(data.name, data.value); });
-	socketio.on("controlCode", function (data) { setControlCode(data); });
-	socketio.on("disconnect", function () {});
-	// $("#nameInput").on('input',function(){ myName = $(this).val() });
 }
 
 /*
@@ -68,6 +53,14 @@ function publishMessage() {
 function updateCodeText(msg){
 	console.log(new Date().toLocaleTimeString() + ' ' + msg);
 	$("#codeText").val(msg);	
+}
+
+/**
+ * PWを更新するメソッド
+ */
+function updatePwText(msg){
+	console.log(new Date().toLocaleTimeString() + ' ' + msg);
+	$("#roomPw").val(msg);	
 }
 
 /*
@@ -93,13 +86,13 @@ function setControlCode(data){
 	if(master == true){
 		//マスターなので編集可に設定
 		$("#language").prop("disabled",false);
-		$("#roomPw").prop("disabled",false);
+		// $("#roomPw").prop("disabled",false);
 		$("#codeText").prop("disabled",false);
 		$("#executeButton").prop("disabled",false);
 	}else{
 		//編集中らしいので編集不可に設定
 		$("#language").prop("disabled",true);
-		$("#roomPw").prop("disabled",true);
+		// $("#roomPw").prop("disabled",true);
 		$("#codeText").prop("disabled",true);
 		$("#executeButton").prop("disabled",true);
 	}
@@ -149,6 +142,27 @@ $(function(){
 		var msg = text;
 		socketio.emit("updatePw", {value: msg});	  
 	});	
+	// ※7 受け取ったメッセージを表示
+	socketio.on("initRoom",function(data){
+		if(data.result == false){
+			alert("PWを間違えています。");
+			window.history.back(-1);
+			return false;
+		}
+		console.log("initRoomイベント");
+		console.log(data);
+		$("#roomId").val(data.room);
+		$("#roomPw").val(data.pw);
+		$("#nameInput").val(data.name);
+		
+	});
+	socketio.on("updateCode", function (data) { updateCodeText(data.value); });
+	socketio.on("updatePw", function (data) { updatePwText(data.value); });
+	socketio.on("publish", function (data) { addMessage(data.name, data.value); });
+	socketio.on("controlCode", function (data) { setControlCode(data); });
+	socketio.on("disconnect", function () {});
+	// $("#nameInput").on('input',function(){ myName = $(this).val() });
+	
 
 	function codeMaster(){
 		console.log("フォーカスはいった");

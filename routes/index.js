@@ -3,6 +3,8 @@
  * GET home page.
  */
 var title = "ラフペアプロ";
+var logger = require('./logger');
+
 module.exports = {
   code :'',
   language : "c",
@@ -10,12 +12,18 @@ module.exports = {
     res.render('index', { title: title });
   },
   ide : function(req, res){
-    console.log("post送信");
+    logger.log("post送信");
     // リクエストボディを出力
-    console.log(req.body);
-    console.log(req.body.room);
-    console.log(req.body.pw);
-    res.render('ide', { title: title, room: req.body.room, pw: req.body.pw,code:exports.code,language:exports.language});
+    logger.log(req.body);
+    logger.log(req.body.room);
+    logger.log(req.body.pw);
+    res.render('ide', { 
+      title: title, 
+      room: req.body.room, 
+      pw: req.body.pw,
+      code:exports.code,
+      language:exports.language
+    });
   }
 
 }

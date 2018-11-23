@@ -1,4 +1,4 @@
-const exports = {
+module.exports = {
 //サーバーのポート番号
     port :80,
 /**

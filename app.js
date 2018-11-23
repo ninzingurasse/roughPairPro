@@ -1,21 +1,22 @@
 
 
 //ライブラリ類のロード
-var express = require('express')
+let express = require('express')
   , http = require('http')
   , path = require('path');
 
 //作成コードのロード
-var routes = require('./routes')
+let routes = require('./routes')
   , logger = require('./routes/logger')
   , user = require('./routes/user')
   , conf = require('./routes/setting');
 
+//ログ出力モードの設定
 logger.mode = conf.logMode;
 logger.log("ログモードは" + logger.mode + "です。");
 
-// all environments
-var app = express();
+// expressの読み込み
+let app = express();
 app.set('port', process.env.PORT || conf.port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -31,17 +32,18 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+//POST,GETイベントの際の、ページルーティング
 app.get('/', routes.index);
 app.post('/ide', routes.ide);
 app.get('/users', user.list);
 
 //Serverオブジェクトの作成
-var server = http.createServer(app);
+let server = http.createServer(app);
 server.listen(app.get('port'), function(){
   logger.log('Express server listening on port ' + app.get('port'));
 });
 
-var io = require('socket.io').listen(server);
+let io = require('socket.io').listen(server);
 server.listen(conf.port);
 
 /*
@@ -52,64 +54,92 @@ server.listen(conf.port);
  */
 
 //ユーザ、ルーム管理ハッシュ
-var roomMasterCnt = 1;
+var roomMasterCnt = 0;
 var roomMaster = [];
+// var roomPw = [];
+var canUsingRoom = [];
 
 // 2.イベントの定義
 io.sockets.on("connection", function (socket) {
 
-  var room='', pw='', name='名無しプログラマーさん', master=undefined;
-    // クライアントに接続成功を送信
-//    socket.emit('WebSocketプロトコルの確立に成功しました。');
-	// socket.emit('connected');
+  let room='', pw='', name='名無しプログラマーさん', master=undefined;
+
 	socket.on('initRoom',function(data){
-    logger.log(data.toString());
-
-
-    if(data.room == ""){
-      room=('00000000'+roomMasterCnt).slice(-8);
-      roomMaster.push(roomMasterCnt);
-      pw='';
-      roomMasterCnt++;
-      logger.log(roomMaster);
-      if(pw == data.pw){
-        logger.log("部屋を作成します。");
-        logger.log(room);
-        logger.log(pw);        
-        //入室を許可します。
-        socket.join(room);
-        io.to(room).emit("initRoom", {room: room,pw:pw,name:name});
+    logger.log(data);
+    logger.log(canUsingRoom);
+    function newRoom(result = true){
+      for (let i = canUsingRoom.length - 1; i >= 0 ; i--){
+        if(canUsingRoom[i] == ""){
+          canUsingRoom.splice(i,1);
+        }else{
+          logger.log("splice:");
+          logger.log(canUsingRoom[i]);          
+        }
       }
-        
-    }else{
-      if(pw == data.pw){
-        room = data.room;
-        pw = data.pw;
-        logger.log("room:"+room+" 新しく1名参加しました。");
-
-        //入室を許可します。
-        socket.join(room);
-        //参加ユーザーのIDとPWを更新します。
-        io.to(room).emit("initRoom", {room: room,pw:pw,name:name});
-        //参加メッセージをみんなに送信します。
-        io.to(room).emit("publish", {name:"["+socket.id + ":"+ name +"]",value:"さんがルームに参加しました。"});
+      logger.log("canUsingRoom:");
+      logger.log(canUsingRoom.length);
+      if(canUsingRoom.length == 0){
+        //新ルームID発行
+        roomMasterCnt++;
+        room = ("00000000"+roomMasterCnt).slice(-8);
       }else{
-        //PW誤り
-        logger.log("["+socket.id + ":"+ name +"]" + "さんはPWを間違えました。")
+        //ルームID再利用
+        logger.log(canUsingRoom[0]);
+        logger.log(canUsingRoom[0] == "");
+        logger.log(canUsingRoom[0] == '');
+        room = canUsingRoom[0];
+        canUsingRoom.shift();
+        logger.log("shift:");
+        logger.log(canUsingRoom);
+        logger.log(canUsingRoom.length);
       }
-    }
-    if(pw == data.pw){
+       pw=data.pw;
+      roomMaster.push(room+pw);
+      logger.log(room+pw);
+      logger.log(roomMaster);
+      logger.log(roomMaster.length);
+       io.sockets.connected[socket.id].emit("initRoom", {room: room,pw:pw,name:name,result:result});
+      logger.log("部屋を作成します。");
+      logger.log(room);
+      logger.log(pw);        
       //入室を許可します。
-      socket.join(room);
-    }
-    });
+      socket.join(room+pw);
+    };
+    if(data.room == ""){
+      newRoom();        
+    }else if(roomMaster.indexOf(data.room + data.pw) != -1){
+      room = data.room;
+      pw = data.pw;
+      logger.log("room:"+room+" 新しく1名参加しました。");
+      logger.log(io.sockets.adapter.rooms[""+room]);
+      logger.log(roomMaster);
+      logger.log(data.room + data.pw);
+      logger.log(roomMaster.indexOf(data.room + data.pw));
 
-  // 接続開始カスタムイベント(接続元ユーザを保存し、他ユーザへ通知)
-  // socket.on("connected", function (name) {
-  //   name += "さんが入室しました。";
-  //   logger.log("roomId:"+room + "で" + name);
-  //   io.to(room).emit("publish", {value: name});
-  // });
+      //入室を許可します。
+      socket.join(room+pw);
+      //参加ユーザーのIDとPWを更新します。
+      io.to(room).emit("initRoom", {room: room,pw:pw,name:name});
+      //参加メッセージをみんなに送信します。
+      if(room != "00000000"){
+        io.to(room).emit("publish", {name:"["+socket.id + ":"+ name +"]",value:"さんがルームに参加しました。"});
+      }
+    }else{
+      //PW誤り
+      logger.log("["+socket.id + ":"+ name +"]" + "さんはPWを間違えました。" + pw );
+      logger.log("["+socket.id + ":"+ name +"]" + "さんはPWを間違えました。" + data.pw );
+      // logger.log(roomPw[roomMaster.indexOf(room)]);
+      logger.log(roomMaster.indexOf(room));
+      logger.log(data.room);
+      // logger.log(roomPw);
+      logger.log(roomMaster);
+      // data.result = false;
+      newRoom(false);
+      // if(room == "00000000"){
+      //   io.sockets.connected[socket.id].emit("publish", {name:"["+socket.id + ":"+ name +"]",value:"さんがルームから退出しました。"});//Room内の特定のユーザーのみ（socket.idで送信元のみに送信）
+      // }
+    }
+  });
 
   // メッセージ送信カスタムイベント
   socket.on("publish", function (data) {
@@ -126,10 +156,9 @@ io.sockets.on("connection", function (socket) {
     logger.log(reqData.master);
     logger.log(master);
     logger.log(socket.id);
-    // var resData = reqData;
     if((master==undefined || master==socket.id) && reqData.master==true){
       // ※6 受け取ったメッセージを部屋の皆に送信
-      var resData = {
+      let resData = {
         language:reqData.language,
         roomPw:reqData.roomPw,
         master:false,
@@ -137,7 +166,6 @@ io.sockets.on("connection", function (socket) {
         stderr:reqData.stderr,
         exeStatus:reqData.exeStatus
       }
-      // resData.master = false;
       routes.language = reqData.language;
       pw = reqData.roomPw;
       logger.log("ロックします.");
@@ -146,11 +174,10 @@ io.sockets.on("connection", function (socket) {
       socket.broadcast.to(room).emit("controlCode", resData);
       io.sockets.connected[socket.id].emit("controlCode", reqData);　//Room内の特定のユーザーのみ（socket.idで送信元のみに送信）
       master = socket.id;      
-      // io.to(room).emit("publish", {value:name + ":" + data.value});
     }else if(master==socket.id && reqData.master==false){
       //解除
       logger.log("ロック解除します.");
-      var resData = {
+      let resData = {
         language:reqData.language,
         roomPw:reqData.roomPw,
         master:true,
@@ -158,7 +185,7 @@ io.sockets.on("connection", function (socket) {
         stderr:reqData.stderr,
         exeStatus:reqData.exeStatus
       }
-      // resData.master = false;
+
       routes.language = reqData.language;
       pw = roomPw=reqData.roomPw;
       io.to(room).emit("controlCode", resData);
@@ -173,7 +200,6 @@ io.sockets.on("connection", function (socket) {
     logger.log("updateCodeを受信しました。");
     if(master==undefined || master==socket.id){
       logger.log("コード更新レスポンスを送信します。");      
-      // code = data.value;
       routes.code = data.value;
       socket.broadcast.to(room).emit("updateCode", {value:data.value});
     }
@@ -184,17 +210,37 @@ io.sockets.on("connection", function (socket) {
     logger.log("updateCodeを受信しました。");
     if(master==undefined || master==socket.id){
       logger.log("コード更新レスポンスを送信します。");      
-      // code = data.value;
+      roomMaster[roomMaster.indexOf(room + pw)] = room + data.value;
       pw = data.value;
-      socket.broadcast.to(room).emit("updateCode", {value:data.value});
+
+      socket.broadcast.to(room).emit("updatePw", {value:data.value});
     }
   });
   
   // 接続終了組み込みイベント(接続元ユーザを削除し、他ユーザへ通知)
   socket.on('disconnect', function () {
+    if(room=="00000000"){
+      socket.leave(room);
+      return;
+    }
     logger.log(name + "が退出します。")
     io.to(room).emit('publish', {name:"["+socket.id + ":"+ name +"]",value:"さんがルームから退出しました。"});
     socket.leave(room);
+
+    logger.log(room + "の人数");
+    logger.log(io.sockets.adapter.rooms[room]);
+
+    //部屋に誰も参加してない場合
+    if(io.sockets.adapter.rooms[room] == undefined){
+      if(room == "00000000" || room =="")  return;
+      canUsingRoom.push(room);
+      logger.log(room + "をroomMasterから削除します");
+      logger.log(roomMaster);
+      roomMaster.splice(roomMaster.indexOf(room),1);
+      logger.log("roomMaster:");
+      logger.log(roomMaster);
+      logger.log(room);
+    }
   });
 
   // 行選択イベント

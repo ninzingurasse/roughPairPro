@@ -5,29 +5,27 @@
     <meta charset="utf-8">
     <script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="css/uikit.min.css" />
     <script src="js/uikit.min.js"></script>
     <script src="js/uikit-icons.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Amatic+SC|Cairo|Charmonman|Cinzel|Dancing+Script|Gloria+Hallelujah|Great+Vibes|Indie+Flower|K2D|Kodchasan|Mali|Montserrat|PT+Sans|Pacifico|Permanent+Marker|Poiret+One|Roboto" rel="stylesheet">
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script>
       var url="/ide";
-      // function postForm(url, data) {
-      //   var $form = $('<form/>', {'action': url, 'method': 'post'});
-      //   for(var key in data) {
-      //     $form.append($('<input/>', {'type': 'hidden', 'name': key, 'value': data[key]}));
-      //   }
-      //   console.log($form);
-      //   $form.appendTo(document.body);
-      //   // $form.submit();
-      // };
+
+      //コード作成
       function newRoom(){
         // postForm('/ide', {'room': undefined, 'pw': undefined});
         $.form({
           type:'post',
           url:url,
-          data:{'room': undefined, 'pw': undefined}
+          data:{'room': "", 'pw':$("#newRoomPwInput").val()}
         });
+
       }
+
+      //誰かの部屋に入る
       function anotherRoom(){
         // postForm('/ide', {'room': $("#roomInput").val(), 'pw': $("#roomPwInput").val()});
         $.form({
@@ -36,50 +34,33 @@
           data:{'room': $("#roomInput").val(), 'pw': $("#roomPwInput").val()}
         });
       }
-      $.form = function(s)
-      {
-        var def = {
-          type: 'get',
-          url: location.href,
-          data: {}
-        };
 
+      $.form = function(s){
+        var def = {type: 'get',url: location.href,data: {}};
         s = jQuery.extend(true, s, jQuery.extend(true, {}, def, s));
-
-        var form = $('<form>')
-          .attr({
-            'method': s.type,
-            'action': s.url
-          }).appendTo(document.body);
-
-        for (var a in s.data) {
-          $('<input>')
-            .attr({
-              'type':'hidden',
-              'name': a,
-              'value': s.data[a]
-            })
-            .appendTo(form[0]);
-        };
+        var form = $('<form>').attr({'method': s.type,'action': s.url}).appendTo(document.body);
+        for (var a in s.data) {$('<input>').attr({'type':'hidden','name': a,'value': s.data[a]}).appendTo(form[0])};
         console.log(form[0]);        
         form[0].submit();
       }
     </script>
   </head>
   <body>
-    <h1><%= title %></h1>
-    <div class="uk-section"uk-grid>
-      <p>ご利用ありがとうございます。<br/>お部屋を選択し、お部屋のメンバー全員でコードを編集するWebアプリです。</p>
+      <label class="uk-padding-remove uk-margin-remove uk-display-block"><%= title %></label>		
+      <h1 class="uk-margin-remove-top">RoughPairPro</h1>
+        <div class="uk-section"uk-grid>
+      <p>ご利用ありがとうございます。<br/>お部屋を選択し、お部屋のメンバー全員でペアプログラミングができるWebアプリです。</p>
     </div>
-    <div uk-grid>
-      <div class="uk-width-1-2">
-            <div class="uk-card uk-card-default uk-card-body" uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
+    <div class="uk-grid uk-padding-remove uk-margin-remove">
+      <div class="uk-width-1-2 uk-padding-small">
+            <div class="uk-card uk-card-default uk-card-body uk-padding-small" uk-scrollspy="cls: uk-animation-slide-left; repeat: true">
               <h2 class="uk-card-title">新しい部屋でコードを書く</h2>
-              <button class="uk-button uk-button-default" onclick="newRoom();">新規コード作成</button>
+              <input id="newRoomPwInput" class="uk-input" type="text" placeholder="パスワード">					
+              <button class="uk-button uk-button-default" onclick="newRoom();">コード作成</button>
           </div>
       </div>
-      <div class="uk-width-1-2 ">
-        <div class="uk-card uk-card-default uk-card-body" uk-scrollspy="cls: uk-animation-slide-right; repeat: true">
+      <div class="uk-width-1-2 uk-padding-small">
+        <div class="uk-card uk-card-default uk-card-body uk-padding-small" uk-scrollspy="cls: uk-animation-slide-right; repeat: true">
           <h2 class="uk-card-title">誰かの部屋でコードを書く</h2>
           <div class="uk-inline">
             <!-- <button class="uk-form-icon uk-form-icon-flip" onclick="" uk-icon="icon: comment"></button> -->
